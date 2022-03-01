@@ -5,9 +5,10 @@ use crate::parse::*;
 use crate::ops::*;
 
 pub struct Calculator {
-    stack: Stack<f64>,
-    ops: Vec<Operation<f64>>,
-    parser: Parser
+    stack: Stack,
+    ops: Vec<Operation>,
+    parser: Parser,
+    should_quit: bool
 }
 
 fn print_repeated_chars(s: &String, c: &String) {
@@ -20,7 +21,7 @@ fn print_repeated_chars(s: &String, c: &String) {
 impl Calculator {
     pub fn new() -> Calculator {
         
-        let all_ops = get_all_operations::<f64>();
+        let all_ops = get_all_operations();
 
         let mut parser = Parser::new();
         parser.set_ops_list(
@@ -30,12 +31,21 @@ impl Calculator {
                 .collect()
         );
 
-        let mut stack = Stack::<f64>::new();
+        parser.set_special_list(vec![
+                "help",
+                "?",
+                "quit",
+                "q"
+            ]
+        );
+
+        let stack = Stack::new();
 
         let calc = Calculator {
             stack,
             ops: get_all_operations(),
-            parser 
+            parser,
+            should_quit: false
         };
 
         return calc
@@ -84,7 +94,7 @@ impl Calculator {
         self.stack.push(number)
     }
 
-    fn get_op_by_name(&self, name: String) -> Result<&Operation<f64>, ()> {
+    fn get_op_by_name(&self, name: String) -> Result<&Operation, ()> {
         for op in &self.ops {
             if op.name == name {
                 return Ok(op)
@@ -92,6 +102,29 @@ impl Calculator {
         }
 
         return Err(())
+    }
+
+    pub fn should_quit(&self) -> bool {
+        return self.should_quit
+    }
+
+    fn show_help(&self) {
+        println!("Available operations:");
+        for op in &self.ops {
+            println!("    {:4} | {}", op.name.green(), op.desc);
+        }
+
+        println!("Other operations: ");
+        println!("    {}", "help ? quit q".yellow());
+
+    }
+
+    fn dispatch_special(&mut self, special: &str) {
+        match special {
+            "help" | "?" => self.show_help(),
+            "quit" | "q" => self.should_quit = true,
+            _ => println!("uh oh")
+        }
     }
 
     pub fn input(&mut self, line: &String) {
@@ -111,7 +144,8 @@ impl Calculator {
 
             println!("{} : {}", lineno, s);
             lineno += 1;
-        } */
+        } 
+        */
 
         for parse in &parses {
             match parse {
@@ -137,7 +171,8 @@ impl Calculator {
                         Err(()) => { println!("unable to resolve op '{}'!", s); return }
                     }
                 },
-                _ => ()
+                Parsed::Special(s) => self.dispatch_special(&s),
+                _=> ()
             }
         }
 

@@ -2,6 +2,8 @@ use colored::Colorize;
 
 use rustyline::error::ReadlineError;
 use rustyline::Editor;
+// use rustyline::EditMode;
+// use rustyline::Config;
 
 mod calc;
 mod ops;
@@ -10,15 +12,21 @@ mod parse;
 
 fn print_hello() {
     println!("alternating current desk calculator v{}", env!("CARGO_PKG_VERSION").blue());
-    println!("operating in {} mode, with {} keybinds.", "floating point".yellow(), "vim".green());
+    println!("operating in {} mode, with {} keybinds.", "floating point".yellow(), "emacs".green());
 }
 
 fn main() {
     print_hello();
-    // `()` can be used when no completer is required
     let mut calc = calc::Calculator::new();
+
+    // set vim mode by default
+    // let rl_config = Config::builder()
+    //     .edit_mode(EditMode::Vi)
+    //     .build();
     let mut rl = Editor::<()>::new();
-    if rl.load_history("history.txt").is_err() {
+
+    // load in a history
+    if rl.load_history("/tmp/acdc_history.txt").is_err() {
         println!("No previous history.");
     }
     loop {
@@ -28,6 +36,10 @@ fn main() {
                 rl.add_history_entry(line.as_str());
                 // println!("Line: {}", line);
                 calc.input(&line);
+
+                if calc.should_quit() {
+                    break
+                }
             },
             Err(ReadlineError::Interrupted) => {
                 println!("CTRL-C");
@@ -43,6 +55,6 @@ fn main() {
             }
         }
     }
-    rl.save_history("history.txt").unwrap();
+    rl.save_history("/tmp/acdc_history.txt").unwrap();
 }
 

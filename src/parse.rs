@@ -8,18 +8,25 @@ pub enum Parsed<T> {
 pub const SPECIAL_TRIGGER_CHAR : char = ';';
 
 pub struct Parser {
-    op_list: Vec<String>
+    op_list: Vec<String>,
+    pub special_list: Vec<&'static str>
 }
 
 impl Parser {
     pub fn new() -> Parser {
         return Parser {
-            op_list: vec![]
+            op_list: vec![],
+            special_list: vec![]
         }
     }
 
     pub fn set_ops_list(&mut self, op_list: Vec<String>) -> () {
         self.op_list = op_list
+    }
+
+    pub fn set_special_list(&mut self, special_list: Vec<&'static str>) -> () {
+
+        self.special_list = special_list
     }
 
     /**
@@ -48,6 +55,11 @@ impl Parser {
 
             if self.op_list.contains(&s) {
                 parses.push(Parsed::Operation(s));
+                continue
+            }
+
+            if self.special_list.contains(&s.as_str()) {
+                parses.push(Parsed::Special(s));
                 continue
             }
 
