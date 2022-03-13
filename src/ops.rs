@@ -95,7 +95,7 @@ fn operator_log(stack: &mut Stack) -> () {
     let number = stack.pop().unwrap();
 
     if base <= 0.0 {
-        println!("warning: negative base for log!")
+        println!("{}", "warning: negative base for log!".yellow())
     }
 
     stack.push(number.log(base));
