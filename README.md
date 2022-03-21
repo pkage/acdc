@@ -8,9 +8,9 @@ and some more features. Definitely not complete, but usable.
 ## installation
 
 ```sh
-$ git clone git@github.com:pkage/focusd && cd focusd
+$ git clone git@github.com:pkage/acdc && cd acdc
 $ cargo build --release
-$ cp target/release/focusd ~/.local/bin
+$ cp target/release/acdc ~/.local/bin
 ```
 
 *or elsewhere on your `$PATH`.*
