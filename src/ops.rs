@@ -55,7 +55,7 @@ fn operator_minus(stack: &mut Stack) -> () {
     let o1 = stack.pop().unwrap();
     let o2 = stack.pop().unwrap();
 
-    stack.push(o1 - o2);
+    stack.push(o2 - o1);
 }
 
 fn operator_multiply(stack: &mut Stack) -> () {
